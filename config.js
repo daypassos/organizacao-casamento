@@ -1,5 +1,9 @@
-// Cole aqui as configurações do seu aplicativo Firebase (Firebase Console > Configurações do projeto > Seus apps > Web).
-// Estas chaves identificam o projeto; a segurança depende das regras do Firestore e da autenticação.
-window.FIREBASE_CONFIG = null;
-// Exemplo:
-// window.FIREBASE_CONFIG = { apiKey: "...", authDomain: "...firebaseapp.com", projectId: "...", appId: "..." };
+
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyB-rF6TgGe18bdPDCJ-zfluXU7Qj8yqN98",
+  authDomain: "organizacao-casamento.firebaseapp.com",
+  projectId: "organizacao-casamento",
+  storageBucket: "organizacao-casamento.firebasestorage.app",
+  messagingSenderId: "928339195167",
+  appId: "1:928339195167:web:2fa5adcddb4f251d896c2a"
+};
