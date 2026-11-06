@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function authorized() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'troque-pelo-email-1@gmail.com',
+          'troque-pelo-email-2@gmail.com'
+        ];
+    }
+    match /casamentos/principal/tarefas/{taskId} {
+      allow read, delete: if authorized();
+      allow create, update: if authorized()
+        && request.resource.data.keys().hasOnly(['id','title','front','owner','due','status','notes'])
+        && request.resource.data.id == taskId
+        && request.resource.data.title is string
+        && request.resource.data.title.size() <= 180
+        && request.resource.data.front is string
+        && request.resource.data.owner is string
+        && request.resource.data.owner.size() <= 90
+        && request.resource.data.due is string
+        && request.resource.data.status in ['Pendente','Em andamento','Concluída']
+        && request.resource.data.notes is string
+        && request.resource.data.notes.size() <= 1000;
+    }
+  }
+}

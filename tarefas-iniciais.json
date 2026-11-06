@@ -1,0 +1,632 @@
+[
+  {
+    "id": "seed-0-0",
+    "title": "Confirmar padrinhos, pais e crianças do cortejo",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-0-1",
+    "title": "Definir ordem de entrada e saída",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-0-2",
+    "title": "Confirmar quem levará as alianças",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-0-3",
+    "title": "Finalizar o porta-alianças",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-0-4",
+    "title": "Definir músicas da cerimônia",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-0-5",
+    "title": "Confirmar celebrante",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-0-6",
+    "title": "Definir responsável pelo cortejo",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-0-7",
+    "title": "Agendar ensaio de entrada e saída",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-1-0",
+    "title": "Conferir flores e folhagens compradas",
+    "front": "Decoração da igreja",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-1-1",
+    "title": "Definir arranjos do altar e das fileiras",
+    "front": "Decoração da igreja",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-1-2",
+    "title": "Confirmar decoração da entrada",
+    "front": "Decoração da igreja",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-1-3",
+    "title": "Conferir vasos e suportes",
+    "front": "Decoração da igreja",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-1-4",
+    "title": "Comprar materiais de fixação",
+    "front": "Decoração da igreja",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-1-5",
+    "title": "Definir responsáveis pela montagem",
+    "front": "Decoração da igreja",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-1-6",
+    "title": "Confirmar horários de montagem e retirada",
+    "front": "Decoração da igreja",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-2-0",
+    "title": "Definir disposição das mesas dos convidados",
+    "front": "Decoração da recepção",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-2-1",
+    "title": "Confirmar decoração das mesas",
+    "front": "Decoração da recepção",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-2-2",
+    "title": "Organizar espaço do bolo",
+    "front": "Decoração da recepção",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-2-3",
+    "title": "Planejar instalação das cortinas e LED já disponíveis",
+    "front": "Decoração da recepção",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-2-4",
+    "title": "Definir painel para fotografias",
+    "front": "Decoração da recepção",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-2-5",
+    "title": "Confirmar cobertura em caso de chuva",
+    "front": "Decoração da recepção",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-2-6",
+    "title": "Definir equipe de montagem e desmontagem",
+    "front": "Decoração da recepção",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-3-0",
+    "title": "Confirmar fornecedor dos 400 salgadinhos",
+    "front": "Buffet e alimentação",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-3-1",
+    "title": "Definir quem preparará o jantar",
+    "front": "Buffet e alimentação",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-3-2",
+    "title": "Confirmar cozinha e equipamentos disponíveis",
+    "front": "Buffet e alimentação",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-3-3",
+    "title": "Organizar compra dos ingredientes",
+    "front": "Buffet e alimentação",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-3-4",
+    "title": "Definir preparo e conservação dos alimentos",
+    "front": "Buffet e alimentação",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-3-5",
+    "title": "Definir responsáveis pela reposição",
+    "front": "Buffet e alimentação",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-3-6",
+    "title": "Organizar serviço self-service",
+    "front": "Buffet e alimentação",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-4-0",
+    "title": "Definir sabores dos refrigerantes (30 L)",
+    "front": "Bebidas",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-4-1",
+    "title": "Definir sabores e preparo dos sucos (20 L)",
+    "front": "Bebidas",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-4-2",
+    "title": "Comprar água mineral (30 L)",
+    "front": "Bebidas",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-4-3",
+    "title": "Providenciar gelo (20 a 25 kg)",
+    "front": "Bebidas",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-4-4",
+    "title": "Confirmar caixas térmicas e jarras",
+    "front": "Bebidas",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-4-5",
+    "title": "Definir responsável pelo serviço das bebidas",
+    "front": "Bebidas",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-5-0",
+    "title": "Confirmar mesas e cadeiras",
+    "front": "Locações e equipamentos",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-5-1",
+    "title": "Confirmar toalhas das mesas",
+    "front": "Locações e equipamentos",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-5-2",
+    "title": "Fechar aluguel das louças e talheres",
+    "front": "Locações e equipamentos",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-5-3",
+    "title": "Alugar 3 réchauds com cubas e tampas",
+    "front": "Locações e equipamentos",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-5-4",
+    "title": "Confirmar utensílios de servir",
+    "front": "Locações e equipamentos",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-5-5",
+    "title": "Confirmar bandejas e travessas",
+    "front": "Locações e equipamentos",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-5-6",
+    "title": "Definir entrega, retirada e devolução",
+    "front": "Locações e equipamentos",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-6-0",
+    "title": "Confirmar responsável pelo bolo",
+    "front": "Bolo e doces",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-6-1",
+    "title": "Definir sabor, tamanho e quantidade",
+    "front": "Bolo e doces",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-6-2",
+    "title": "Confirmar se haverá docinhos",
+    "front": "Bolo e doces",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-6-3",
+    "title": "Definir horário do corte do bolo",
+    "front": "Bolo e doces",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-6-4",
+    "title": "Confirmar utensílios para servir",
+    "front": "Bolo e doces",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-6-5",
+    "title": "Planejar conservação do bolo",
+    "front": "Bolo e doces",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-7-0",
+    "title": "Verificar iluminação da recepção",
+    "front": "Estrutura do local",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-7-1",
+    "title": "Conferir pontos de energia",
+    "front": "Estrutura do local",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-7-2",
+    "title": "Verificar extensões e instalações do LED",
+    "front": "Estrutura do local",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-7-3",
+    "title": "Confirmar proteção contra chuva",
+    "front": "Estrutura do local",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-7-4",
+    "title": "Organizar circulação entre cozinha e buffet",
+    "front": "Estrutura do local",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-7-5",
+    "title": "Conferir banheiros e materiais de higiene",
+    "front": "Estrutura do local",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-7-6",
+    "title": "Definir local de descarte do lixo",
+    "front": "Estrutura do local",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-8-0",
+    "title": "Definir coordenador geral",
+    "front": "Equipe familiar",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-8-1",
+    "title": "Definir responsáveis pela cerimônia",
+    "front": "Equipe familiar",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-8-2",
+    "title": "Definir responsáveis pela decoração",
+    "front": "Equipe familiar",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-8-3",
+    "title": "Definir responsáveis pelo preparo do jantar",
+    "front": "Equipe familiar",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-8-4",
+    "title": "Definir responsáveis pelo buffet e bebidas",
+    "front": "Equipe familiar",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-8-5",
+    "title": "Definir responsáveis pelo recolhimento de louças",
+    "front": "Equipe familiar",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-8-6",
+    "title": "Definir responsáveis pela desmontagem",
+    "front": "Equipe familiar",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-9-0",
+    "title": "Consolidar orçamento geral",
+    "front": "Cronograma e orçamento",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-9-1",
+    "title": "Definir responsáveis pelos pagamentos",
+    "front": "Cronograma e orçamento",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-9-2",
+    "title": "Estabelecer datas das compras",
+    "front": "Cronograma e orçamento",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-9-3",
+    "title": "Confirmar horários dos fornecedores",
+    "front": "Cronograma e orçamento",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-9-4",
+    "title": "Organizar montagem na véspera",
+    "front": "Cronograma e orçamento",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-9-5",
+    "title": "Elaborar programação do dia",
+    "front": "Cronograma e orçamento",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-9-6",
+    "title": "Confirmar horário de encerramento",
+    "front": "Cronograma e orçamento",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  },
+  {
+    "id": "seed-9-7",
+    "title": "Organizar devolução dos materiais alugados",
+    "front": "Cronograma e orçamento",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": ""
+  }
+]
