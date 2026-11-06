@@ -12,18 +12,61 @@ const lists=[
 ['Consolidar orçamento geral','Definir responsáveis pelos pagamentos','Estabelecer datas das compras','Confirmar horários dos fornecedores','Organizar montagem na véspera','Elaborar programação do dia','Confirmar horário de encerramento','Organizar devolução dos materiais alugados']
 ];
 const defaultTasks=lists.flatMap((arr,i)=>arr.map((title,j)=>({id:`seed-${i}-${j}`,title,front:fronts[i],owner:'',due:'',status:'Pendente',notes:''})));
-const $=id=>document.getElementById(id);let tasks=[], editing=null, remote=false, db=null, auth=null, user=null, unsub=null;const storeKey='casamento-tarefas-v1';
-const load=()=>{try{return JSON.parse(localStorage.getItem(storeKey))||defaultTasks}catch{return defaultTasks}};tasks=load();
-function persist(){if(!remote)localStorage.setItem(storeKey,JSON.stringify(tasks))}
+const $=id=>document.getElementById(id);let tasks=[], editing=null, remote=false, db=null, auth=null, user=null, unsub=null, accessReady=false;const storeKey='casamento-tarefas-v1';
+const load=()=>{try{return JSON.parse(localStorage.getItem(storeKey))||defaultTasks}catch{return defaultTasks}};tasks=[];
+function persist(){}
 function render(){const search=$('search').value.toLocaleLowerCase('pt-BR'),ff=$('frontFilter').value,sf=$('statusFilter').value;const done=tasks.filter(t=>t.status==='Concluída').length,late=tasks.filter(t=>t.due&&t.due<new Date().toISOString().slice(0,10)&&t.status!=='Concluída').length;$('progress').textContent=(tasks.length?Math.round(done/tasks.length*100):0)+'%';$('done').textContent=done;$('pending').textContent=tasks.length-done;$('late').textContent=late;$('bar').style.width=(tasks.length?done/tasks.length*100:0)+'%';const host=$('groups');host.replaceChildren();for(const front of fronts){if(ff&&ff!==front)continue;const all=tasks.filter(t=>t.front===front),visible=all.filter(t=>(!sf||t.status===sf)&&(`${t.title} ${t.owner} ${t.notes}`.toLocaleLowerCase('pt-BR').includes(search)));if(!visible.length&&(ff||sf||search))continue;const section=document.createElement('section');section.className='group';const head=document.createElement('div');head.className='grouphead';const heading=document.createElement('h2');heading.textContent=front;const meta=document.createElement('span');meta.className='muted';meta.textContent=`${all.filter(t=>t.status==='Concluída').length}/${all.length} concluídas · ${visible.length} exibidas`;head.append(heading,meta);const list=document.createElement('div');list.className='tasks';for(const t of visible){const item=document.createElement('div');item.className='task'+(t.status==='Concluída'?' completed':'');const ck=document.createElement('input');ck.type='checkbox';ck.checked=t.status==='Concluída';ck.setAttribute('aria-label','Concluir '+t.title);ck.onchange=()=>update({...t,status:ck.checked?'Concluída':'Pendente'});const detail=document.createElement('div');const title=document.createElement('h3');title.textContent=t.title;const metaLine=document.createElement('div');metaLine.className='meta';const owner=document.createElement('span');owner.textContent='👤 '+(t.owner||'Sem responsável');const date=document.createElement('span');date.textContent='📅 '+(t.due?t.due.split('-').reverse().join('/'):'Sem prazo');const tag=document.createElement('span');tag.className='tag'+(t.status==='Concluída'?' done':t.due&&t.due<new Date().toISOString().slice(0,10)?' late':'');tag.textContent=t.status;metaLine.append(owner,date,tag);detail.append(title,metaLine);if(t.notes){const note=document.createElement('div');note.className='muted';note.textContent=t.notes;detail.append(note)}const edit=document.createElement('button');edit.className='edit';edit.textContent='Editar';edit.onclick=()=>openEditor(t);item.append(ck,detail,edit);list.append(item)}if(!visible.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Nenhuma tarefa nesta frente.';list.append(empty)}head.onclick=()=>list.hidden=!list.hidden;section.append(head,list);host.append(section)}}
 function openEditor(t=null){editing=t?.id||null;$('dialogTitle').textContent=t?'Editar tarefa':'Nova tarefa';const f=$('taskForm');f.elements.title.value=t?.title||'';f.elements.front.value=t?.front||fronts[0];f.elements.owner.value=t?.owner||'';f.elements.due.value=t?.due||'';f.elements.status.value=t?.status||'Pendente';f.elements.notes.value=t?.notes||'';$('deleteBtn').hidden=!t;$('editor').showModal()}
 let setDocFn=null,deleteDocFn=null,docFn=null,colFn=null;
-async function update(t){if(remote){try{await setDocFn(docFn(db,'casamentos','principal','tarefas',t.id),t)}catch(e){alert('Não foi possível salvar: '+e.message)}}else{tasks=tasks.filter(x=>x.id!==t.id).concat(t);persist();render()}}
-async function remove(id){if(remote){try{await deleteDocFn(docFn(db,'casamentos','principal','tarefas',id))}catch(e){alert(e.message)}}else{tasks=tasks.filter(t=>t.id!==id);persist();render()}}
+async function update(t){if(!remote){alert('Entre com uma conta autorizada para editar.');return}if(remote){try{await setDocFn(docFn(db,'casamentos','principal','tarefas',t.id),t)}catch(e){alert('Não foi possível salvar: '+e.message)}}else{tasks=tasks.filter(x=>x.id!==t.id).concat(t);persist();render()}}
+async function remove(id){if(!remote){alert('Entre com uma conta autorizada para excluir.');return}if(remote){try{await deleteDocFn(docFn(db,'casamentos','principal','tarefas',id))}catch(e){alert(e.message)}}else{tasks=tasks.filter(t=>t.id!==id);persist();render()}}
 for(const front of fronts){for(const select of [$('frontFilter'),$('editFront')]){const o=document.createElement('option');o.value=front;o.textContent=front;select.append(o)}}
-$('search').oninput=render;$('frontFilter').onchange=render;$('statusFilter').onchange=render;$('addBtn').onclick=()=>openEditor();$('cancelBtn').onclick=()=>$('editor').close();$('deleteBtn').onclick=async()=>{if(editing&&confirm('Excluir esta tarefa?')){await remove(editing);$('editor').close()}};
+$('search').oninput=render;$('frontFilter').onchange=render;$('statusFilter').onchange=render;$('addBtn').onclick=()=>{if(remote)openEditor()};$('cancelBtn').onclick=()=>$('editor').close();$('deleteBtn').onclick=async()=>{if(editing&&confirm('Excluir esta tarefa?')){await remove(editing);$('editor').close()}};
 $('taskForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget.elements;const id=editing||crypto.randomUUID();await update({id,title:f.title.value.trim(),front:f.front.value,owner:f.owner.value.trim(),due:f.due.value,status:f.status.value,notes:f.notes.value.trim()});$('editor').close()};
-$('exportBtn').onclick=()=>{const b=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='casamento-backup.json';a.click();URL.revokeObjectURL(a.href)};
-$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data)||!data.every(t=>t.id&&t.title&&fronts.includes(t.front)))throw Error('Arquivo inválido');if(!confirm('Importar tarefas? No modo online, isso adicionará/atualizará os registros do arquivo.'))return;for(const t of data)await update(t);render()}catch(err){alert(err.message)}e.target.value=''};
-render();
-if(window.FIREBASE_CONFIG?.apiKey){try{const base='https://www.gstatic.com/firebasejs/10.14.1/';const [{initializeApp},{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged},{getFirestore,collection,doc,setDoc,deleteDoc,onSnapshot}]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);const app=initializeApp(window.FIREBASE_CONFIG);auth=getAuth(app);db=getFirestore(app);setDocFn=setDoc;deleteDocFn=deleteDoc;docFn=doc;colFn=collection;$('loginBtn').hidden=false;$('loginBtn').onclick=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert(e.message));$('logoutBtn').onclick=()=>signOut(auth);onAuthStateChanged(auth,async u=>{user=u;if(unsub){unsub();unsub=null}remote=!!u;$('loginBtn').hidden=!!u;$('logoutBtn').hidden=!u;$('syncStatus').textContent=u?'Sincronizado · '+u.email:'Entre com Google para sincronizar';if(u){unsub=onSnapshot(collection(db,'casamentos','principal','tarefas'),snap=>{if(snap.empty){$('syncStatus').textContent='Projeto vazio · importe o arquivo inicial para começar';tasks=[]}else tasks=snap.docs.map(d=>d.data());render()},e=>{$('syncStatus').textContent='Erro de acesso: '+e.message;remote=false})}else{tasks=load();render()}})}catch(e){$('syncStatus').textContent='Falha ao conectar: '+e.message}}
+$('exportBtn').onclick=()=>{if(!remote)return;const b=new Blob([JSON.stringify(tasks,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='casamento-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('importBtn').onclick=()=>{if(remote)$('importFile').click()};$('importFile').onchange=async e=>{if(!remote)return;try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data)||!data.every(t=>t.id&&t.title&&fronts.includes(t.front)))throw Error('Arquivo inválido');if(!confirm('Importar tarefas? No modo online, isso adicionará/atualizará os registros do arquivo.'))return;for(const t of data)await update(t);render()}catch(err){alert(err.message)}e.target.value=''};
+function showGate(message, loginEnabled=false){
+  $('privateContent').hidden=true;
+  $('accessGate').hidden=false;
+  $('gateMessage').textContent=message;
+  $('gateLoginBtn').hidden=!loginEnabled;
+}
+function showApp(email){
+  $('privateContent').hidden=false;
+  $('accessGate').hidden=true;
+  $('userEmail').hidden=false;
+  $('userEmail').textContent=email;
+}
+showGate('Verificando a conexão segura com o Firebase...');
+if(window.FIREBASE_CONFIG?.apiKey){
+ try{
+  const base='https://www.gstatic.com/firebasejs/10.14.1/';
+  const [{initializeApp},{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,setPersistence,browserLocalPersistence},{getFirestore,collection,doc,setDoc,deleteDoc,onSnapshot}]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
+  const app=initializeApp(window.FIREBASE_CONFIG);
+  auth=getAuth(app); db=getFirestore(app);
+  setDocFn=setDoc;deleteDocFn=deleteDoc;docFn=doc;colFn=collection;
+  await setPersistence(auth,browserLocalPersistence);
+  const login=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('Não foi possível entrar: '+e.message));
+  $('loginBtn').onclick=login;$('gateLoginBtn').onclick=login;
+  $('logoutBtn').onclick=async()=>{try{await signOut(auth)}catch(e){alert('Não foi possível sair: '+e.message)}};
+  onAuthStateChanged(auth,u=>{
+   if(unsub){unsub();unsub=null}
+   user=u;remote=false;tasks=[];render();
+   $('loginBtn').hidden=!!u;$('logoutBtn').hidden=!u;
+   $('userEmail').hidden=!u;
+   $('userEmail').textContent=u?.email||'';
+   if(!u){$('syncStatus').textContent='Não conectado';showGate('Entre com uma conta Google autorizada para acessar as tarefas.',true);return}
+   $('syncStatus').textContent='Verificando permissão...';
+   showGate('Validando seu acesso ao checklist compartilhado...');
+   unsub=onSnapshot(collection(db,'casamentos','principal','tarefas'),snap=>{
+    remote=true;tasks=snap.docs.map(d=>d.data());render();
+    $('syncStatus').textContent=snap.empty?'Conectado · banco vazio':'Sincronizado';
+    showApp(u.email||'Conta Google');
+   },e=>{
+    remote=false;tasks=[];render();
+    $('syncStatus').textContent='Acesso não autorizado';
+    showGate(e.code==='permission-denied'?'Esta conta não está autorizada. Solicite ao organizador que inclua seu e-mail nas regras do Firestore.':'Não foi possível acessar as tarefas: '+e.message);
+   });
+  },e=>showGate('Erro na autenticação: '+e.message,true));
+ }catch(e){$('syncStatus').textContent='Erro de configuração';showGate('Falha ao iniciar o Firebase: '+e.message)}
+}else{$('syncStatus').textContent='Firebase não configurado';showGate('Configure o arquivo config.js para habilitar o login Google e o acompanhamento compartilhado.')}
