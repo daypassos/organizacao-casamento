@@ -56,7 +56,7 @@ if(window.FIREBASE_CONFIG?.apiKey){
   onAuthStateChanged(auth,async u=>{
    stopWeddingListeners();isAdmin=false;user=u;remote=false;tasks=[];render();
    $('loginBtn').hidden=!!u;$('logoutBtn').hidden=!u;$('userEmail').hidden=!u;$('userEmail').textContent=u?.email||'';
-   $('accessBtn').hidden=true;$('createWeddingBtn').hidden=true;$('weddingsPanel').hidden=true;
+   $('accessBtn').hidden=true;$('createWeddingBtn').hidden=true;$('weddingsPanel').hidden=true;$('homeMenuBtn').hidden=!u;
    if(!u){$('syncStatus').textContent='Não conectado';showGate(inviteToken?'Você recebeu um convite. Entre com Google para aceitá-lo.':'Entre com Google para acessar seus casamentos.',true);return}
    $('syncStatus').textContent='Carregando espaços...';showGate('Buscando seus casamentos...');
    try{
@@ -65,7 +65,7 @@ if(window.FIREBASE_CONFIG?.apiKey){
     adminEmail=(adm.data()?.adminEmail||'').toLowerCase();isAdmin=adminEmail===u.email?.toLowerCase();
    }catch(e){isAdmin=false}
    $('createWeddingBtn').hidden=!isAdmin;
-   await loadWeddings();
+   try{await loadWeddings()}catch(e){weddings=[{id:'principal',name:'Stephanie & Lucas',date:'2026-11-28'}];renderWeddingPicker();$('syncStatus').textContent='Erro ao listar casamentos: '+e.message;}
    if(inviteToken){currentWedding=requestedWedding||'principal';showInviteAcceptance();return}
    const desired=requestedWedding&&weddings.some(w=>w.id===requestedWedding)?requestedWedding:null;
    if(desired)openWedding(desired);
@@ -160,11 +160,11 @@ function renderWeddingPicker(){
  const host=$('weddingsList');host.replaceChildren();
  weddings.forEach(w=>{const b=document.createElement('button');b.className='wedding-card';b.type='button';b.textContent='💍 '+(w.name||w.id)+(w.date?' · '+w.date.split('-').reverse().join('/'):'');b.onclick=()=>openWedding(w.id);host.append(b)});
 }
-function showWeddingPicker(){history.replaceState({},'',location.pathname);stopWeddingListeners();remote=false;$('privateContent').hidden=true;$('accessGate').hidden=true;$('weddingsPanel').hidden=false;$('backWeddingsBtn').hidden=true;$('accessBtn').hidden=true;$('syncStatus').textContent='Escolha um casamento';}
+function showWeddingPicker(){history.replaceState({},'',location.pathname);stopWeddingListeners();remote=false;$('privateContent').hidden=true;$('accessGate').hidden=true;$('weddingsPanel').hidden=false;$('backWeddingsBtn').hidden=true;$('accessBtn').hidden=true;$('homeMenuBtn').hidden=!user;$('createWeddingBtn').hidden=!isAdmin;$('weddingTitle').textContent='Elo';$('weddingSubtitle').textContent='Organizar juntos faz tudo acontecer.';$('syncStatus').textContent='Escolha um casamento';$('weddingsNotice').textContent=isAdmin?'Você pode criar novos casamentos como administradora geral.':'A criação de novos casamentos é exclusiva da administradora geral. Se esta é sua conta administradora, verifique as permissões do Firebase.';}
 function openWedding(id){
  if(!weddings.some(w=>w.id===id)&&!inviteToken)return;
  stopWeddingListeners();currentWedding=id;remote=false;tasks=[];render();
- $('weddingsPanel').hidden=true;$('backWeddingsBtn').hidden=false;
+ $('weddingsPanel').hidden=true;$('backWeddingsBtn').hidden=false;$('homeMenuBtn').hidden=false;
  $('accessBtn').hidden=!isAdmin;
  const w=weddings.find(x=>x.id===id);$('weddingTitle').textContent=w?.name||'Casamento';$('weddingSubtitle').textContent=w?.date?new Date(w.date+'T12:00:00').toLocaleDateString('pt-BR'): 'Planejamento colaborativo';
  history.replaceState({},'',location.pathname+'?evento='+encodeURIComponent(id));
@@ -172,6 +172,7 @@ function openWedding(id){
  unsub=onSnapshot(collection(db,'casamentos',id,'tarefas'),snap=>{remote=true;tasks=snap.docs.map(d=>d.data());render();$('syncStatus').textContent='Sincronizado';showApp(user.email||'Conta Google')},e=>{remote=false;tasks=[];render();$('syncStatus').textContent='Acesso negado';showGate('Sem permissão para acessar este casamento: '+e.message)});
 }
 $('backWeddingsBtn').onclick=showWeddingPicker;
+$('homeMenuBtn').onclick=async()=>{if(!user){showGate('Entre com Google para acessar seus casamentos.',true);return}try{await loadWeddings();showWeddingPicker()}catch(e){showWeddingPicker();$('weddingsNotice').textContent='Não foi possível atualizar a lista: '+e.message}};
 $('createWeddingBtn').onclick=()=>{if(isAdmin)$('createWeddingDialog').showModal()};
 $('closeWeddingBtn').onclick=()=>$('createWeddingDialog').close();
 $('createWeddingForm').onsubmit=async e=>{
