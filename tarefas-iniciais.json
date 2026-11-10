@@ -5,8 +5,8 @@
     "front": "Cerimônia e cortejo",
     "owner": "",
     "due": "",
-    "status": "Pendente",
-    "notes": ""
+    "status": "Concluída",
+    "notes": "Definidos 2 padrinhos e 2 madrinhas (não são casais). Criança da placa é diferente de Yanne, que levará as alianças. Participantes do cortejo ficam na primeira fileira junto aos pais da noiva e à mãe do noivo."
   },
   {
     "id": "seed-0-1",
@@ -23,8 +23,8 @@
     "front": "Cerimônia e cortejo",
     "owner": "",
     "due": "",
-    "status": "Pendente",
-    "notes": ""
+    "status": "Concluída",
+    "notes": "Yanne, filha da noiva, entrará com as alianças."
   },
   {
     "id": "seed-0-3",
@@ -64,12 +64,12 @@
   },
   {
     "id": "seed-0-7",
-    "title": "Agendar ensaio de entrada e saída",
+    "title": "Realizar ensaio de entrada e saída",
     "front": "Cerimônia e cortejo",
     "owner": "",
-    "due": "",
-    "status": "Pendente",
-    "notes": ""
+    "due": "2026-11-15",
+    "status": "Agendada",
+    "notes": "Domingo, 15/11/2026, às 14h. Testar cortejo, primeira fileira e disposição diagonal das cadeiras."
   },
   {
     "id": "seed-1-0",
@@ -77,8 +77,8 @@
     "front": "Decoração da igreja",
     "owner": "",
     "due": "",
-    "status": "Pendente",
-    "notes": ""
+    "status": "Em andamento",
+    "notes": "Flores já encomendadas, entrega prevista na semana de 09 a 15/11; conferir quando chegarem."
   },
   {
     "id": "seed-1-1",
@@ -140,8 +140,8 @@
     "front": "Decoração da recepção",
     "owner": "",
     "due": "",
-    "status": "Pendente",
-    "notes": ""
+    "status": "Concluída",
+    "notes": "Mesas quadradas escolhidas (substituem as redondas). Disposição diagonal das cadeiras na igreja; testar no ensaio."
   },
   {
     "id": "seed-2-1",
@@ -321,7 +321,7 @@
     "owner": "",
     "due": "",
     "status": "Pendente",
-    "notes": ""
+    "notes": "Alugar mesas quadradas e cadeiras; confirmar quantidades, entrega, retirada e frete."
   },
   {
     "id": "seed-5-1",
@@ -628,5 +628,68 @@
     "due": "",
     "status": "Pendente",
     "notes": ""
+  },
+  {
+    "id": "alinh-placa",
+    "title": "Providenciar placa “Lá vem a noiva”",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "2026-11-15",
+    "status": "Pendente",
+    "notes": "Outra criança (não Yanne) entrará com a placa, no lugar da florista. Confirmar quem será a criança."
+  },
+  {
+    "id": "alinh-fileira",
+    "title": "Reservar primeira fileira para participantes do cortejo e familiares",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "2026-11-15",
+    "status": "Pendente",
+    "notes": "Pais da noiva e mãe do noivo na primeira fileira junto com os participantes do cortejo; confirmar lugares no ensaio."
+  },
+  {
+    "id": "alinh-cadeiras",
+    "title": "Testar cadeiras na diagonal durante o ensaio",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "2026-11-15",
+    "status": "Agendada",
+    "notes": "Posicionamento em diagonal solicitado para melhorar a visão da entrada da noiva."
+  },
+  {
+    "id": "alinh-compra-flores",
+    "title": "Comprar flores e materiais complementares na loja",
+    "front": "Decoração da igreja",
+    "owner": "",
+    "due": "2026-11-14",
+    "status": "Agendada",
+    "notes": "Compra prevista para sábado, 14/11/2026; conferir o que chegou antes de comprar."
+  },
+  {
+    "id": "alinh-fotografa",
+    "title": "Confirmar horários e cobertura com a fotógrafa",
+    "front": "Equipe familiar",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": "Fotógrafa conseguida como cortesia; confirmar chegada, cobertura e entrega das fotos."
+  },
+  {
+    "id": "alinh-aluguel",
+    "title": "Fechar aluguel de mesas quadradas e cadeiras",
+    "front": "Locações e equipamentos",
+    "owner": "",
+    "due": "",
+    "status": "Pendente",
+    "notes": "Mesas quadradas definidas; locação ainda pendente. Confirmar quantidades, frete, entrega e retirada."
+  },
+  {
+    "id": "alinh-ordem",
+    "title": "Validar ordem de entrada no ensaio",
+    "front": "Cerimônia e cortejo",
+    "owner": "",
+    "due": "2026-11-15",
+    "status": "Agendada",
+    "notes": "2 padrinhos, 2 madrinhas (não casais); criança com placa “Lá vem a noiva”; Yanne com alianças."
   }
 ]
