@@ -13,3 +13,5 @@
 .tag.scheduled{background:#e8e9ff;color:#414c93;border-radius:20px;padding:3px 10px}
 
 .invite-panel{margin:20px 0;padding:16px;border:1px solid #d9e3e8;border-radius:14px}.invite-panel h3{margin:12px 0}.invite-panel input{width:100%;margin:8px 0}.invite-buttons{display:flex;gap:6px;flex-wrap:wrap}.invite-panel .member-row{gap:10px;flex-wrap:wrap}#inviteShare{margin-top:14px}#inviteShare .actions{justify-content:flex-start}#inviteMessage{overflow-wrap:anywhere}
+
+.weddings-panel{margin:24px 0;padding:25px;border-radius:18px;background:#fff;box-shadow:0 2px 15px #193c4712}.weddings-list{display:grid;gap:12px;margin:20px 0}.wedding-card{display:block;width:100%;padding:20px;text-align:left;border:1px solid #d5e3e7;border-radius:14px;background:#f8fbfb;font-weight:700;cursor:pointer}.wedding-card:hover{border-color:#5a9e90;background:#eff9f6}

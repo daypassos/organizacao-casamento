@@ -12,7 +12,7 @@ const lists=[
 ['Consolidar orçamento geral','Definir responsáveis pelos pagamentos','Estabelecer datas das compras','Confirmar horários dos fornecedores','Organizar montagem na véspera','Elaborar programação do dia','Confirmar horário de encerramento','Organizar devolução dos materiais alugados']
 ];
 const defaultTasks=lists.flatMap((arr,i)=>arr.map((title,j)=>({id:`seed-${i}-${j}`,title,front:fronts[i],owner:'',due:'',status:'Pendente',notes:''})));
-const $=id=>document.getElementById(id);let tasks=[], editing=null, remote=false, db=null, auth=null, user=null, unsub=null, accessReady=false;const storeKey='casamento-tarefas-v1';
+const $=id=>document.getElementById(id);let tasks=[], editing=null, remote=false, db=null, auth=null, user=null, unsub=null, accessReady=false;const storeKey='elo-tarefas-v2';let currentWedding='principal',weddings=[],weddingUnsubs=[];const requestedWedding=new URLSearchParams(location.search).get('evento');
 const load=()=>{try{return JSON.parse(localStorage.getItem(storeKey))||defaultTasks}catch{return defaultTasks}};tasks=[];
 function persist(){}
 const frontIcons=['💍','⛪','🌿','🍽️','🥤','🪑','🎂','🏛️','👨‍👩‍👧‍👦','📅','👰','🤵'];
@@ -22,8 +22,8 @@ $('showAllFronts').onclick=()=>{$('frontFilter').value='';render()};
 function render(){renderFrontCards();renderOverview();const search=$('search').value.toLocaleLowerCase('pt-BR'),ff=$('frontFilter').value,sf=$('statusFilter').value;const done=tasks.filter(t=>t.status==='Concluída').length,late=tasks.filter(t=>t.due&&t.due<new Date().toISOString().slice(0,10)&&t.status!=='Concluída').length;$('progress').textContent=(tasks.length?Math.round(done/tasks.length*100):0)+'%';$('done').textContent=done;$('pending').textContent=tasks.length-done;$('late').textContent=late;$('bar').style.width=(tasks.length?done/tasks.length*100:0)+'%';const host=$('groups');host.replaceChildren();for(const front of fronts){if(ff&&ff!==front)continue;const all=tasks.filter(t=>t.front===front),visible=all.filter(t=>(!sf||t.status===sf)&&(`${t.title} ${t.owner} ${t.notes}`.toLocaleLowerCase('pt-BR').includes(search)));if(!visible.length&&(ff||sf||search))continue;const section=document.createElement('section');section.className='group';const head=document.createElement('div');head.className='grouphead';const heading=document.createElement('h2');heading.textContent=front;const meta=document.createElement('span');meta.className='muted';meta.textContent=`${all.filter(t=>t.status==='Concluída').length}/${all.length} concluídas · ${visible.length} exibidas`;head.append(heading,meta);const list=document.createElement('div');list.className='tasks';for(const t of visible){const item=document.createElement('div');item.className='task'+(t.status==='Concluída'?' completed':'');const ck=document.createElement('input');ck.type='checkbox';ck.checked=t.status==='Concluída';ck.setAttribute('aria-label','Concluir '+t.title);ck.onchange=()=>update({...t,status:ck.checked?'Concluída':(t.status==='Concluída'?'Pendente':t.status)});const detail=document.createElement('div');const title=document.createElement('h3');title.textContent=t.title;const metaLine=document.createElement('div');metaLine.className='meta';const owner=document.createElement('span');owner.textContent='👤 '+(t.owner||'Sem responsável');const date=document.createElement('span');date.textContent='📅 '+(t.due?t.due.split('-').reverse().join('/'):'Sem prazo');const tag=document.createElement('span');tag.className='tag'+(t.status==='Concluída'?' done':t.status==='Agendada'?' scheduled':t.due&&t.due<new Date().toISOString().slice(0,10)?' late':'');tag.textContent=t.status;metaLine.append(owner,date,tag);detail.append(title,metaLine);if(t.notes){const note=document.createElement('div');note.className='muted';note.textContent=t.notes;detail.append(note)}const edit=document.createElement('button');edit.className='edit';edit.textContent='Editar';edit.onclick=()=>openEditor(t);item.append(ck,detail,edit);list.append(item)}if(!visible.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Nenhuma tarefa nesta frente.';list.append(empty)}head.onclick=()=>list.hidden=!list.hidden;section.append(head,list);host.append(section)}}
 function openEditor(t=null){editing=t?.id||null;$('dialogTitle').textContent=t?'Editar tarefa':'Nova tarefa';const f=$('taskForm');f.elements.title.value=t?.title||'';f.elements.front.value=t?.front||fronts[0];f.elements.owner.value=t?.owner||'';f.elements.due.value=t?.due||'';f.elements.status.value=t?.status||'Pendente';f.elements.notes.value=t?.notes||'';$('deleteBtn').hidden=!t;$('editor').showModal()}
 let setDocFn=null,deleteDocFn=null,docFn=null,colFn=null,getDocFn=null,memberUnsub=null,inviteUnsub=null,isAdmin=false,adminEmail="", inviteToken=new URLSearchParams(location.search).get("convite"), inviteBusy=false, writeBatchFn=null, serverTimestampFn=null, timestampFn=null;
-async function update(t){if(!remote){alert('Entre com uma conta autorizada para editar.');return}if(remote){try{await setDocFn(docFn(db,'casamentos','principal','tarefas',t.id),t)}catch(e){alert('Não foi possível salvar: '+e.message)}}else{tasks=tasks.filter(x=>x.id!==t.id).concat(t);persist();render()}}
-async function remove(id){if(!remote){alert('Entre com uma conta autorizada para excluir.');return}if(remote){try{await deleteDocFn(docFn(db,'casamentos','principal','tarefas',id))}catch(e){alert(e.message)}}else{tasks=tasks.filter(t=>t.id!==id);persist();render()}}
+async function update(t){if(!remote){alert('Entre com uma conta autorizada para editar.');return}if(remote){try{await setDocFn(docFn(db,'casamentos',currentWedding,'tarefas',t.id),t)}catch(e){alert('Não foi possível salvar: '+e.message)}}else{tasks=tasks.filter(x=>x.id!==t.id).concat(t);persist();render()}}
+async function remove(id){if(!remote){alert('Entre com uma conta autorizada para excluir.');return}if(remote){try{await deleteDocFn(docFn(db,'casamentos',currentWedding,'tarefas',id))}catch(e){alert(e.message)}}else{tasks=tasks.filter(t=>t.id!==id);persist();render()}}
 for(const front of fronts){for(const select of [$('frontFilter'),$('editFront')]){const o=document.createElement('option');o.value=front;o.textContent=front;select.append(o)}}
 $('search').oninput=render;$('frontFilter').onchange=render;$('statusFilter').onchange=render;$('addBtn').onclick=()=>{if(remote)openEditor()};$('cancelBtn').onclick=()=>$('editor').close();$('deleteBtn').onclick=async()=>{if(editing&&confirm('Excluir esta tarefa?')){await remove(editing);$('editor').close()}};
 $('taskForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget.elements;const id=editing||crypto.randomUUID();await update({id,title:f.title.value.trim(),front:f.front.value,owner:f.owner.value.trim(),due:f.due.value,status:f.status.value,notes:f.notes.value.trim()});$('editor').close()};
@@ -48,30 +48,30 @@ if(window.FIREBASE_CONFIG?.apiKey){
   const [{initializeApp},{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,setPersistence,browserLocalPersistence},{getFirestore,collection,doc,setDoc,deleteDoc,getDoc,onSnapshot,writeBatch,Timestamp}]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
   const app=initializeApp(window.FIREBASE_CONFIG);
   auth=getAuth(app); db=getFirestore(app);
-  setDocFn=setDoc;deleteDocFn=deleteDoc;docFn=doc;colFn=collection;getDocFn=getDoc;writeBatchFn=writeBatch;timestampFn=Timestamp;
+  window.eloFirestore={onSnapshot,collection};setDocFn=setDoc;deleteDocFn=deleteDoc;docFn=doc;colFn=collection;getDocFn=getDoc;writeBatchFn=writeBatch;timestampFn=Timestamp;
   await setPersistence(auth,browserLocalPersistence);
   const login=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('Não foi possível entrar: '+e.message));
   $('loginBtn').onclick=login;$('gateLoginBtn').onclick=login;
   $('logoutBtn').onclick=async()=>{try{await signOut(auth)}catch(e){alert('Não foi possível sair: '+e.message)}};
-  onAuthStateChanged(auth,u=>{
-   if(unsub){unsub();unsub=null}if(memberUnsub){memberUnsub();memberUnsub=null}if(inviteUnsub){inviteUnsub();inviteUnsub=null}isAdmin=false;$("accessBtn").hidden=true;$("accessDialog").close?.();
-   user=u;remote=false;tasks=[];render();
-   $('loginBtn').hidden=!!u;$('logoutBtn').hidden=!u;
-   $('userEmail').hidden=!u;
-   $('userEmail').textContent=u?.email||'';
-   if(!u){$('syncStatus').textContent='Não conectado';showGate(inviteToken?'Você recebeu um convite. Entre com Google para aceitá-lo.':'Entre com uma conta Google autorizada para acessar as tarefas.',true);return}
-   $('syncStatus').textContent='Verificando permissão...';
-   getDoc(doc(db,'casamentos','principal','config','administracao')).then(snap=>{if(user?.uid!==u.uid)return;adminEmail=(snap.data()?.adminEmail||'').toLowerCase();isAdmin=adminEmail===u.email?.toLowerCase();$('accessBtn').hidden=!isAdmin;}).catch(()=>{});
-   showGate('Validando seu acesso ao checklist compartilhado...');if(inviteToken)showInviteAcceptance();
-   unsub=onSnapshot(collection(db,'casamentos','principal','tarefas'),snap=>{
-    remote=true;tasks=snap.docs.map(d=>d.data());render();
-    $('syncStatus').textContent=snap.empty?'Conectado · banco vazio':'Sincronizado';
-    showApp(u.email||'Conta Google');
-   },e=>{
-    remote=false;tasks=[];render();
-    $('syncStatus').textContent='Acesso não autorizado';
-    showGate(e.code==='permission-denied'?'Esta conta não está autorizada. Solicite ao organizador que inclua seu e-mail nas regras do Firestore.':'Não foi possível acessar as tarefas: '+e.message);
-   });
+  onAuthStateChanged(auth,async u=>{
+   stopWeddingListeners();isAdmin=false;user=u;remote=false;tasks=[];render();
+   $('loginBtn').hidden=!!u;$('logoutBtn').hidden=!u;$('userEmail').hidden=!u;$('userEmail').textContent=u?.email||'';
+   $('accessBtn').hidden=true;$('createWeddingBtn').hidden=true;$('weddingsPanel').hidden=true;
+   if(!u){$('syncStatus').textContent='Não conectado';showGate(inviteToken?'Você recebeu um convite. Entre com Google para aceitá-lo.':'Entre com Google para acessar seus casamentos.',true);return}
+   $('syncStatus').textContent='Carregando espaços...';showGate('Buscando seus casamentos...');
+   try{
+    const adm=await getDoc(doc(db,'casamentos','principal','config','administracao'));
+    if(user?.uid!==u.uid)return;
+    adminEmail=(adm.data()?.adminEmail||'').toLowerCase();isAdmin=adminEmail===u.email?.toLowerCase();
+   }catch(e){isAdmin=false}
+   $('createWeddingBtn').hidden=!isAdmin;
+   await loadWeddings();
+   if(inviteToken){currentWedding=requestedWedding||'principal';showInviteAcceptance();return}
+   const desired=requestedWedding&&weddings.some(w=>w.id===requestedWedding)?requestedWedding:null;
+   if(desired)openWedding(desired);
+   else if(weddings.length===1)openWedding(weddings[0].id);
+   else if(weddings.length)showWeddingPicker();
+   else showGate('Nenhum casamento autorizado para esta conta. Peça um convite individual ao organizador.');
   },e=>showGate('Erro na autenticação: '+e.message,true));
  }catch(e){$('syncStatus').textContent='Erro de configuração';showGate('Falha ao iniciar o Firebase: '+e.message)}
 }else{$('syncStatus').textContent='Firebase não configurado';showGate('Configure o arquivo config.js para habilitar o login Google e o acompanhamento compartilhado.')}
@@ -79,7 +79,7 @@ if(window.FIREBASE_CONFIG?.apiKey){
 // Administração de acessos: os membros são armazenados no Firestore.
 $('accessBtn').onclick=()=>{
  if(!isAdmin)return;
- $('accessDialog').showModal();$('memberMessage').textContent='';$('inviteMessage').textContent='';
+ $('memberForm').hidden=currentWedding!=='principal';$('accessDialog').showModal();$('memberMessage').textContent='';$('inviteMessage').textContent='';
  if(memberUnsub)memberUnsub();
  memberUnsub=onMembers();inviteUnsub=onInvites();
 };
@@ -89,14 +89,14 @@ function onMembers(){
  let active=true;
  import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js').then(({onSnapshot,collection})=>{
   if(!active)return;
-  const stop=onSnapshot(collection(db,'casamentos','principal','membros'),snap=>{
+  const stop=onSnapshot(collection(db,'casamentos',currentWedding,'membros'),snap=>{
    const host=$('memberList');host.replaceChildren();
    if(snap.empty){const p=document.createElement('p');p.textContent='Nenhum familiar adicionado ainda.';host.append(p)}
    snap.docs.sort((a,b)=>a.id.localeCompare(b.id)).forEach(d=>{
     const line=document.createElement('div');line.className='member-row';
     const email=document.createElement('span');email.textContent=d.id;
     const btn=document.createElement('button');btn.textContent='Remover';btn.className='danger';
-    btn.onclick=async()=>{if(!confirm('Remover o acesso de '+d.id+'?'))return;try{await deleteDocFn(docFn(db,'casamentos','principal','membros',d.id));$('memberMessage').textContent='Acesso removido.'}catch(e){$('memberMessage').textContent='Erro: '+e.message}};
+    btn.onclick=async()=>{if(!confirm('Remover o acesso de '+d.id+'?'))return;try{await deleteDocFn(docFn(db,'casamentos',currentWedding,'membros',d.id));$('memberMessage').textContent='Acesso removido.'}catch(e){$('memberMessage').textContent='Erro: '+e.message}};
     line.append(email,btn);host.append(line);
    });
   },e=>$('memberMessage').textContent='Não foi possível listar acessos: '+e.message);
@@ -105,18 +105,18 @@ function onMembers(){
  return ()=>{active=false};
 }
 $('memberForm').onsubmit=async e=>{
- e.preventDefault();if(!isAdmin)return;
+ e.preventDefault();if(!isAdmin||currentWedding!=='principal'){alert('Nos novos casamentos, utilize o convite individual por link.');return}
  const email=$('memberEmail').value.trim().toLowerCase();
  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return;
  if(email===adminEmail){$('memberMessage').textContent='A conta administradora já possui acesso.';return}
- try{await setDocFn(docFn(db,'casamentos','principal','membros',email),{email,addedAt:new Date().toISOString()});$('memberEmail').value='';$('memberMessage').textContent='Acesso concedido a '+email}
+ try{await setDocFn(docFn(db,'casamentos',currentWedding,'membros',email),{email,addedAt:new Date().toISOString()});$('memberEmail').value='';$('memberMessage').textContent='Acesso concedido a '+email}
  catch(err){$('memberMessage').textContent='Não foi possível conceder acesso: '+err.message}
 };
 
 // Convites individuais: criação somente pelo administrador; aceite em lote atômico.
-const invitePath=id=>docFn(db,'casamentos','principal','convites',id);
-const memberPath=email=>docFn(db,'casamentos','principal','membros',email);
-const invitationUrl=id=>`${location.origin}${location.pathname}?convite=${encodeURIComponent(id)}`;
+const invitePath=id=>docFn(db,'casamentos',currentWedding,'convites',id);
+const memberPath=email=>docFn(db,'casamentos',currentWedding,'membros',email);
+const invitationUrl=id=>`${location.origin}${location.pathname}?evento=${encodeURIComponent(currentWedding)}&convite=${encodeURIComponent(id)}`;
 function showInviteAcceptance(){if(!inviteToken||!user)return;const dialog=$('inviteDialog');$('inviteAcceptMessage').textContent='Este convite só pode ser utilizado uma vez, por uma conta Google, nas primeiras 24 horas. Ao aceitar, esta conta será autorizada.';if(!dialog.open)dialog.showModal()}
 $('inviteCancelBtn').onclick=()=>{$('inviteDialog').close();};
 $('inviteAcceptBtn').onclick=async()=>{
@@ -124,8 +124,8 @@ $('inviteAcceptBtn').onclick=async()=>{
  try{
   const ref=invitePath(inviteToken),snap=await getDocFn(ref);if(!snap.exists())throw Error('Convite inexistente ou inacessível.');const data=snap.data();
   if(data.status!=='Pendente'||data.expiresAt.toMillis()<=Date.now())throw Error('Convite já utilizado, revogado ou expirado.');
-  const email=user.email.toLowerCase(),batch=writeBatchFn(db);batch.update(ref,{status:'Aceito',acceptedEmail:email,acceptedUid:user.uid,acceptedAt:timestampFn.now()});batch.set(memberPath(email),{email,addedAt:new Date().toISOString(),inviteId:inviteToken});await batch.commit();
-  $('inviteAcceptMessage').textContent='Convite aceito! Seu acesso foi liberado.';inviteToken=null;history.replaceState({},'',location.pathname);setTimeout(()=>{$('inviteDialog').close()},1200);
+  const email=user.email.toLowerCase(),batch=writeBatchFn(db);batch.update(ref,{status:'Aceito',acceptedEmail:email,acceptedUid:user.uid,acceptedAt:timestampFn.now()});batch.set(memberPath(email),{email,addedAt:new Date().toISOString(),inviteId:inviteToken});batch.set(docFn(db,'usuarios',user.uid,'espacos',currentWedding),{weddingId:currentWedding,joinedAt:new Date().toISOString(),inviteId:inviteToken});await batch.commit();
+  $('inviteAcceptMessage').textContent='Convite aceito! Seu acesso foi liberado.';inviteToken=null;await loadWeddings();openWedding(currentWedding);history.replaceState({},'',location.pathname+'?evento='+encodeURIComponent(currentWedding));setTimeout(()=>{$('inviteDialog').close()},1200);
  }catch(e){$('inviteAcceptMessage').textContent='Não foi possível aceitar: '+e.message}
  finally{inviteBusy=false;btn.disabled=false}
 };
@@ -137,5 +137,50 @@ $('createInviteBtn').onclick=async()=>{
  }catch(e){$('inviteMessage').textContent='Erro ao gerar convite: '+e.message}finally{btn.disabled=false}
 };
 $('copyInviteBtn').onclick=async()=>{try{await navigator.clipboard.writeText($('inviteUrl').value);$('inviteMessage').textContent='Link copiado.'}catch(e){$('inviteUrl').select();$('inviteMessage').textContent='Selecione e copie o link acima.'}};
-$('shareInviteBtn').onclick=async()=>{const url=$('inviteUrl').value;if(!url)return;const msg='Convite individual para organizar o casamento de Stephanie e Lucas. Entre com Google em até 24 horas (uso único): '+url;if(navigator.share){try{await navigator.share({title:'Convite do casamento',text:msg})}catch(e){}}else{window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank','noopener')}};
-function onInvites(){let active=true;let stop=()=>{};import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js').then(({onSnapshot,collection})=>{if(!active)return;stop=onSnapshot(collection(db,'casamentos','principal','convites'),snap=>{const host=$('inviteList');host.replaceChildren();if(snap.empty){host.textContent='Nenhum convite gerado.';return}snap.docs.sort((a,b)=>b.data().createdAt?.toMillis()-a.data().createdAt?.toMillis()).forEach(d=>{const v=d.data(),line=document.createElement('div');line.className='member-row';const label=document.createElement('span');const expired=v.status==='Pendente'&&v.expiresAt.toMillis()<=Date.now();label.textContent=(v.acceptedEmail||'Convite individual')+' · '+(expired?'Expirado':v.status);const buttons=document.createElement('div');buttons.className='invite-buttons';if(v.status==='Pendente'&&!expired){const copy=document.createElement('button');copy.textContent='Copiar';copy.onclick=async()=>{await navigator.clipboard.writeText(invitationUrl(d.id));$('inviteMessage').textContent='Link copiado.'};const revoke=document.createElement('button');revoke.textContent='Revogar';revoke.className='danger';revoke.onclick=async()=>{if(!confirm('Revogar este convite?'))return;try{await (await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')).updateDoc(invitePath(d.id),{status:'Revogado'})}catch(e){$('inviteMessage').textContent=e.message}};buttons.append(copy,revoke)}line.append(label,buttons);host.append(line)})},e=>$('inviteMessage').textContent='Erro ao listar convites: '+e.message)});return()=>{active=false;stop()}}
+$('shareInviteBtn').onclick=async()=>{const url=$('inviteUrl').value;if(!url)return;const msg='Convite individual para colaborar no Elo. Entre com Google em até 24 horas (uso único): '+url;if(navigator.share){try{await navigator.share({title:'Convite do casamento',text:msg})}catch(e){}}else{window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank','noopener')}};
+function onInvites(){let active=true;let stop=()=>{};import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js').then(({onSnapshot,collection})=>{if(!active)return;stop=onSnapshot(collection(db,'casamentos',currentWedding,'convites'),snap=>{const host=$('inviteList');host.replaceChildren();if(snap.empty){host.textContent='Nenhum convite gerado.';return}snap.docs.sort((a,b)=>b.data().createdAt?.toMillis()-a.data().createdAt?.toMillis()).forEach(d=>{const v=d.data(),line=document.createElement('div');line.className='member-row';const label=document.createElement('span');const expired=v.status==='Pendente'&&v.expiresAt.toMillis()<=Date.now();label.textContent=(v.acceptedEmail||'Convite individual')+' · '+(expired?'Expirado':v.status);const buttons=document.createElement('div');buttons.className='invite-buttons';if(v.status==='Pendente'&&!expired){const copy=document.createElement('button');copy.textContent='Copiar';copy.onclick=async()=>{await navigator.clipboard.writeText(invitationUrl(d.id));$('inviteMessage').textContent='Link copiado.'};const revoke=document.createElement('button');revoke.textContent='Revogar';revoke.className='danger';revoke.onclick=async()=>{if(!confirm('Revogar este convite?'))return;try{await (await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js')).updateDoc(invitePath(d.id),{status:'Revogado'})}catch(e){$('inviteMessage').textContent=e.message}};buttons.append(copy,revoke)}line.append(label,buttons);host.append(line)})},e=>$('inviteMessage').textContent='Erro ao listar convites: '+e.message)});return()=>{active=false;stop()}}
+
+function stopWeddingListeners(){if(unsub){unsub();unsub=null}if(memberUnsub){memberUnsub();memberUnsub=null}if(inviteUnsub){inviteUnsub();inviteUnsub=null}weddingUnsubs.forEach(fn=>fn());weddingUnsubs=[];}
+async function loadWeddings(){
+ weddings=[];
+ const {getDocs,collection}=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');
+ if(isAdmin){
+  weddings.push({id:'principal',name:'Stephanie & Lucas',date:'2026-11-28',legacy:true});
+  const snap=await getDocs(collection(db,'casamentos'));
+  snap.forEach(d=>{if(d.id!=='principal')weddings.push({id:d.id,...d.data()})});
+ }else{
+  const idx=await getDocs(collection(db,'usuarios',user.uid,'espacos'));
+  idx.forEach(d=>weddings.push({id:d.id,name:d.data().name||d.id}));
+  // Compatibilidade: familiares antigos não possuem índice de espaço.
+  const legacy=await getDoc(doc(db,'casamentos','principal','membros',user.email.toLowerCase())).catch(()=>null);
+  if(legacy?.exists()&&!weddings.some(w=>w.id==='principal'))weddings.unshift({id:'principal',name:'Stephanie & Lucas',date:'2026-11-28'});
+ }
+ renderWeddingPicker();
+}
+function renderWeddingPicker(){
+ const host=$('weddingsList');host.replaceChildren();
+ weddings.forEach(w=>{const b=document.createElement('button');b.className='wedding-card';b.type='button';b.textContent='💍 '+(w.name||w.id)+(w.date?' · '+w.date.split('-').reverse().join('/'):'');b.onclick=()=>openWedding(w.id);host.append(b)});
+}
+function showWeddingPicker(){stopWeddingListeners();remote=false;$('privateContent').hidden=true;$('accessGate').hidden=true;$('weddingsPanel').hidden=false;$('backWeddingsBtn').hidden=true;$('accessBtn').hidden=true;$('syncStatus').textContent='Escolha um casamento';}
+function openWedding(id){
+ if(!weddings.some(w=>w.id===id)&&!inviteToken)return;
+ stopWeddingListeners();currentWedding=id;remote=false;tasks=[];render();
+ $('weddingsPanel').hidden=true;$('backWeddingsBtn').hidden=weddings.length<2;
+ $('accessBtn').hidden=!isAdmin;
+ const w=weddings.find(x=>x.id===id);$('weddingTitle').textContent=w?.name||'Casamento';$('weddingSubtitle').textContent=w?.date?new Date(w.date+'T12:00:00').toLocaleDateString('pt-BR'): 'Planejamento colaborativo';
+ history.replaceState({},'',location.pathname+'?evento='+encodeURIComponent(id));
+ const {onSnapshot,collection}=window.eloFirestore;
+ unsub=onSnapshot(collection(db,'casamentos',id,'tarefas'),snap=>{remote=true;tasks=snap.docs.map(d=>d.data());render();$('syncStatus').textContent='Sincronizado';showApp(user.email||'Conta Google')},e=>{remote=false;tasks=[];render();$('syncStatus').textContent='Acesso negado';showGate('Sem permissão para acessar este casamento: '+e.message)});
+}
+$('backWeddingsBtn').onclick=showWeddingPicker;
+$('createWeddingBtn').onclick=()=>{if(isAdmin)$('createWeddingDialog').showModal()};
+$('closeWeddingBtn').onclick=()=>$('createWeddingDialog').close();
+$('createWeddingForm').onsubmit=async e=>{
+ e.preventDefault();if(!isAdmin)return;
+ const name=$('newWeddingName').value.trim(),date=$('newWeddingDate').value;
+ if(!name||!date)return;
+ const id='cas-'+crypto.randomUUID();
+ try{await setDocFn(docFn(db,'casamentos',id),{name,date,createdBy:user.uid,createdAt:new Date().toISOString()});
+  $('createWeddingDialog').close();await loadWeddings();openWedding(id);
+ }catch(err){$('newWeddingMessage').textContent='Não foi possível criar: '+err.message}
+};
