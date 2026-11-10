@@ -17,7 +17,7 @@ const load=()=>{try{return JSON.parse(localStorage.getItem(storeKey))||defaultTa
 function persist(){}
 function render(){const search=$('search').value.toLocaleLowerCase('pt-BR'),ff=$('frontFilter').value,sf=$('statusFilter').value;const done=tasks.filter(t=>t.status==='Concluída').length,late=tasks.filter(t=>t.due&&t.due<new Date().toISOString().slice(0,10)&&t.status!=='Concluída').length;$('progress').textContent=(tasks.length?Math.round(done/tasks.length*100):0)+'%';$('done').textContent=done;$('pending').textContent=tasks.length-done;$('late').textContent=late;$('bar').style.width=(tasks.length?done/tasks.length*100:0)+'%';const host=$('groups');host.replaceChildren();for(const front of fronts){if(ff&&ff!==front)continue;const all=tasks.filter(t=>t.front===front),visible=all.filter(t=>(!sf||t.status===sf)&&(`${t.title} ${t.owner} ${t.notes}`.toLocaleLowerCase('pt-BR').includes(search)));if(!visible.length&&(ff||sf||search))continue;const section=document.createElement('section');section.className='group';const head=document.createElement('div');head.className='grouphead';const heading=document.createElement('h2');heading.textContent=front;const meta=document.createElement('span');meta.className='muted';meta.textContent=`${all.filter(t=>t.status==='Concluída').length}/${all.length} concluídas · ${visible.length} exibidas`;head.append(heading,meta);const list=document.createElement('div');list.className='tasks';for(const t of visible){const item=document.createElement('div');item.className='task'+(t.status==='Concluída'?' completed':'');const ck=document.createElement('input');ck.type='checkbox';ck.checked=t.status==='Concluída';ck.setAttribute('aria-label','Concluir '+t.title);ck.onchange=()=>update({...t,status:ck.checked?'Concluída':'Pendente'});const detail=document.createElement('div');const title=document.createElement('h3');title.textContent=t.title;const metaLine=document.createElement('div');metaLine.className='meta';const owner=document.createElement('span');owner.textContent='👤 '+(t.owner||'Sem responsável');const date=document.createElement('span');date.textContent='📅 '+(t.due?t.due.split('-').reverse().join('/'):'Sem prazo');const tag=document.createElement('span');tag.className='tag'+(t.status==='Concluída'?' done':t.due&&t.due<new Date().toISOString().slice(0,10)?' late':'');tag.textContent=t.status;metaLine.append(owner,date,tag);detail.append(title,metaLine);if(t.notes){const note=document.createElement('div');note.className='muted';note.textContent=t.notes;detail.append(note)}const edit=document.createElement('button');edit.className='edit';edit.textContent='Editar';edit.onclick=()=>openEditor(t);item.append(ck,detail,edit);list.append(item)}if(!visible.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Nenhuma tarefa nesta frente.';list.append(empty)}head.onclick=()=>list.hidden=!list.hidden;section.append(head,list);host.append(section)}}
 function openEditor(t=null){editing=t?.id||null;$('dialogTitle').textContent=t?'Editar tarefa':'Nova tarefa';const f=$('taskForm');f.elements.title.value=t?.title||'';f.elements.front.value=t?.front||fronts[0];f.elements.owner.value=t?.owner||'';f.elements.due.value=t?.due||'';f.elements.status.value=t?.status||'Pendente';f.elements.notes.value=t?.notes||'';$('deleteBtn').hidden=!t;$('editor').showModal()}
-let setDocFn=null,deleteDocFn=null,docFn=null,colFn=null;
+let setDocFn=null,deleteDocFn=null,docFn=null,colFn=null,getDocFn=null,memberUnsub=null,isAdmin=false,adminEmail="";
 async function update(t){if(!remote){alert('Entre com uma conta autorizada para editar.');return}if(remote){try{await setDocFn(docFn(db,'casamentos','principal','tarefas',t.id),t)}catch(e){alert('Não foi possível salvar: '+e.message)}}else{tasks=tasks.filter(x=>x.id!==t.id).concat(t);persist();render()}}
 async function remove(id){if(!remote){alert('Entre com uma conta autorizada para excluir.');return}if(remote){try{await deleteDocFn(docFn(db,'casamentos','principal','tarefas',id))}catch(e){alert(e.message)}}else{tasks=tasks.filter(t=>t.id!==id);persist();render()}}
 for(const front of fronts){for(const select of [$('frontFilter'),$('editFront')]){const o=document.createElement('option');o.value=front;o.textContent=front;select.append(o)}}
@@ -41,22 +41,23 @@ showGate('Verificando a conexão segura com o Firebase...');
 if(window.FIREBASE_CONFIG?.apiKey){
  try{
   const base='https://www.gstatic.com/firebasejs/10.14.1/';
-  const [{initializeApp},{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,setPersistence,browserLocalPersistence},{getFirestore,collection,doc,setDoc,deleteDoc,onSnapshot}]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
+  const [{initializeApp},{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged,setPersistence,browserLocalPersistence},{getFirestore,collection,doc,setDoc,deleteDoc,getDoc,onSnapshot}]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-auth.js'),import(base+'firebase-firestore.js')]);
   const app=initializeApp(window.FIREBASE_CONFIG);
   auth=getAuth(app); db=getFirestore(app);
-  setDocFn=setDoc;deleteDocFn=deleteDoc;docFn=doc;colFn=collection;
+  setDocFn=setDoc;deleteDocFn=deleteDoc;docFn=doc;colFn=collection;getDocFn=getDoc;
   await setPersistence(auth,browserLocalPersistence);
   const login=()=>signInWithPopup(auth,new GoogleAuthProvider()).catch(e=>alert('Não foi possível entrar: '+e.message));
   $('loginBtn').onclick=login;$('gateLoginBtn').onclick=login;
   $('logoutBtn').onclick=async()=>{try{await signOut(auth)}catch(e){alert('Não foi possível sair: '+e.message)}};
   onAuthStateChanged(auth,u=>{
-   if(unsub){unsub();unsub=null}
+   if(unsub){unsub();unsub=null}if(memberUnsub){memberUnsub();memberUnsub=null}isAdmin=false;$("accessBtn").hidden=true;$("accessDialog").close?.();
    user=u;remote=false;tasks=[];render();
    $('loginBtn').hidden=!!u;$('logoutBtn').hidden=!u;
    $('userEmail').hidden=!u;
    $('userEmail').textContent=u?.email||'';
    if(!u){$('syncStatus').textContent='Não conectado';showGate('Entre com uma conta Google autorizada para acessar as tarefas.',true);return}
    $('syncStatus').textContent='Verificando permissão...';
+   getDoc(doc(db,'casamentos','principal','config','administracao')).then(snap=>{if(user?.uid!==u.uid)return;adminEmail=(snap.data()?.adminEmail||'').toLowerCase();isAdmin=adminEmail===u.email?.toLowerCase();$('accessBtn').hidden=!isAdmin;}).catch(()=>{});
    showGate('Validando seu acesso ao checklist compartilhado...');
    unsub=onSnapshot(collection(db,'casamentos','principal','tarefas'),snap=>{
     remote=true;tasks=snap.docs.map(d=>d.data());render();
@@ -70,3 +71,40 @@ if(window.FIREBASE_CONFIG?.apiKey){
   },e=>showGate('Erro na autenticação: '+e.message,true));
  }catch(e){$('syncStatus').textContent='Erro de configuração';showGate('Falha ao iniciar o Firebase: '+e.message)}
 }else{$('syncStatus').textContent='Firebase não configurado';showGate('Configure o arquivo config.js para habilitar o login Google e o acompanhamento compartilhado.')}
+
+// Administração de acessos: os membros são armazenados no Firestore.
+$('accessBtn').onclick=()=>{
+ if(!isAdmin)return;
+ $('accessDialog').showModal();$('memberMessage').textContent='';
+ if(memberUnsub)memberUnsub();
+ memberUnsub=onMembers();
+};
+$('closeAccessBtn').onclick=()=>{$('accessDialog').close();if(memberUnsub){memberUnsub();memberUnsub=null}};
+function onMembers(){
+ // Importações do Firebase são reutilizadas através de carregamento dinâmico.
+ let active=true;
+ import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js').then(({onSnapshot,collection})=>{
+  if(!active)return;
+  const stop=onSnapshot(collection(db,'casamentos','principal','membros'),snap=>{
+   const host=$('memberList');host.replaceChildren();
+   if(snap.empty){const p=document.createElement('p');p.textContent='Nenhum familiar adicionado ainda.';host.append(p)}
+   snap.docs.sort((a,b)=>a.id.localeCompare(b.id)).forEach(d=>{
+    const line=document.createElement('div');line.className='member-row';
+    const email=document.createElement('span');email.textContent=d.id;
+    const btn=document.createElement('button');btn.textContent='Remover';btn.className='danger';
+    btn.onclick=async()=>{if(!confirm('Remover o acesso de '+d.id+'?'))return;try{await deleteDocFn(docFn(db,'casamentos','principal','membros',d.id));$('memberMessage').textContent='Acesso removido.'}catch(e){$('memberMessage').textContent='Erro: '+e.message}};
+    line.append(email,btn);host.append(line);
+   });
+  },e=>$('memberMessage').textContent='Não foi possível listar acessos: '+e.message);
+  const previous=memberUnsub;memberUnsub=()=>{active=false;stop()};
+ }).catch(e=>$('memberMessage').textContent=e.message);
+ return ()=>{active=false};
+}
+$('memberForm').onsubmit=async e=>{
+ e.preventDefault();if(!isAdmin)return;
+ const email=$('memberEmail').value.trim().toLowerCase();
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return;
+ if(email===adminEmail){$('memberMessage').textContent='A conta administradora já possui acesso.';return}
+ try{await setDocFn(docFn(db,'casamentos','principal','membros',email),{email,addedAt:new Date().toISOString()});$('memberEmail').value='';$('memberMessage').textContent='Acesso concedido a '+email}
+ catch(err){$('memberMessage').textContent='Não foi possível conceder acesso: '+err.message}
+};
