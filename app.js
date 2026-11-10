@@ -69,7 +69,6 @@ if(window.FIREBASE_CONFIG?.apiKey){
    if(inviteToken){currentWedding=requestedWedding||'principal';showInviteAcceptance();return}
    const desired=requestedWedding&&weddings.some(w=>w.id===requestedWedding)?requestedWedding:null;
    if(desired)openWedding(desired);
-   else if(weddings.length===1)openWedding(weddings[0].id);
    else if(weddings.length)showWeddingPicker();
    else showGate('Nenhum casamento autorizado para esta conta. Peça um convite individual ao organizador.');
   },e=>showGate('Erro na autenticação: '+e.message,true));
@@ -161,11 +160,11 @@ function renderWeddingPicker(){
  const host=$('weddingsList');host.replaceChildren();
  weddings.forEach(w=>{const b=document.createElement('button');b.className='wedding-card';b.type='button';b.textContent='💍 '+(w.name||w.id)+(w.date?' · '+w.date.split('-').reverse().join('/'):'');b.onclick=()=>openWedding(w.id);host.append(b)});
 }
-function showWeddingPicker(){stopWeddingListeners();remote=false;$('privateContent').hidden=true;$('accessGate').hidden=true;$('weddingsPanel').hidden=false;$('backWeddingsBtn').hidden=true;$('accessBtn').hidden=true;$('syncStatus').textContent='Escolha um casamento';}
+function showWeddingPicker(){history.replaceState({},'',location.pathname);stopWeddingListeners();remote=false;$('privateContent').hidden=true;$('accessGate').hidden=true;$('weddingsPanel').hidden=false;$('backWeddingsBtn').hidden=true;$('accessBtn').hidden=true;$('syncStatus').textContent='Escolha um casamento';}
 function openWedding(id){
  if(!weddings.some(w=>w.id===id)&&!inviteToken)return;
  stopWeddingListeners();currentWedding=id;remote=false;tasks=[];render();
- $('weddingsPanel').hidden=true;$('backWeddingsBtn').hidden=weddings.length<2;
+ $('weddingsPanel').hidden=true;$('backWeddingsBtn').hidden=false;
  $('accessBtn').hidden=!isAdmin;
  const w=weddings.find(x=>x.id===id);$('weddingTitle').textContent=w?.name||'Casamento';$('weddingSubtitle').textContent=w?.date?new Date(w.date+'T12:00:00').toLocaleDateString('pt-BR'): 'Planejamento colaborativo';
  history.replaceState({},'',location.pathname+'?evento='+encodeURIComponent(id));
